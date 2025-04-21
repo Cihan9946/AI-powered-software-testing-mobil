@@ -1,3 +1,0 @@
-Bu bir test dosyasıdır.
-Bu dosya güvenlik analizi için kullanılacaktır.
-Test içeriği buraya yazılmıştır. 

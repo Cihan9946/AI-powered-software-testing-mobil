@@ -1,3 +1,0 @@
-Bu ikinci test dosyasıdır.
-Bu dosya da güvenlik analizi için kullanılacaktır.
-İkinci test içeriği buraya yazılmıştır. 

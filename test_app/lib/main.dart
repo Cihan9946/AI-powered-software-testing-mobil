@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:archive/archive.dart';
 import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,6 +35,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // Zip dosyası analiz sonuçlarını tutacak değişken
+  Map<String, dynamic> _zipAnalysisResult = {};
+  bool _isAnalyzing = false;
+
   void _pickAndExtractZip() async {
     // Kullanıcıdan zip dosyası seçmesini isteyin
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -77,6 +83,117 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  // Assets klasöründeki test2.zip dosyasını analiz et
+  void _analyzeAssetsZip() async {
+    setState(() {
+      _isAnalyzing = true;
+    });
+
+    try {
+      // Assets klasöründeki test2.zip dosyasını oku
+      final ByteData data = await rootBundle.load('assets/test2.zip');
+      final List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+      
+      // Zip dosyasını analiz et
+      _analyzeZip(bytes);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Hata: $e')),
+      );
+    } finally {
+      setState(() {
+        _isAnalyzing = false;
+      });
+    }
+  }
+
+  // Zip dosyasını analiz et ve rapor oluştur
+  void _analyzeZip(List<int> bytes) {
+    try {
+      final archive = ZipDecoder().decodeBytes(bytes);
+      
+      // Analiz sonuçlarını tutacak değişkenler
+      int totalFiles = 0;
+      int totalFolders = 0;
+      int totalSize = 0;
+      List<String> fileNames = [];
+      List<String> folderNames = [];
+      Map<String, int> fileSizes = {};
+      
+      // Zip içeriğini analiz et
+      for (final file in archive) {
+        if (file.isFile) {
+          totalFiles++;
+          fileNames.add(file.name);
+          fileSizes[file.name] = file.content.length;
+          totalSize += file.content.length;
+        } else {
+          totalFolders++;
+          folderNames.add(file.name);
+        }
+      }
+      
+      // Analiz sonuçlarını kaydet
+      setState(() {
+        _zipAnalysisResult = {
+          'totalFiles': totalFiles,
+          'totalFolders': totalFolders,
+          'totalSize': totalSize,
+          'fileNames': fileNames,
+          'folderNames': folderNames,
+          'fileSizes': fileSizes,
+        };
+      });
+      
+      // Analiz sonuçlarını göster
+      _showAnalysisReport();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Zip analiz hatası: $e')),
+      );
+    }
+  }
+
+  // Analiz raporunu göster
+  void _showAnalysisReport() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Zip Dosyası Analiz Raporu'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Toplam Dosya Sayısı: ${_zipAnalysisResult['totalFiles']}'),
+              Text('Toplam Klasör Sayısı: ${_zipAnalysisResult['totalFolders']}'),
+              Text('Toplam Boyut: ${(_zipAnalysisResult['totalSize'] / 1024).toStringAsFixed(2)} KB'),
+              SizedBox(height: 10),
+              Text('Dosyalar:', style: TextStyle(fontWeight: FontWeight.bold)),
+              ..._zipAnalysisResult['fileNames'].map<Widget>((fileName) {
+                int fileSize = _zipAnalysisResult['fileSizes'][fileName];
+                return Text('$fileName (${(fileSize / 1024).toStringAsFixed(2)} KB)');
+              }).toList(),
+              if (_zipAnalysisResult['folderNames'].isNotEmpty) ...[
+                SizedBox(height: 10),
+                Text('Klasörler:', style: TextStyle(fontWeight: FontWeight.bold)),
+                ..._zipAnalysisResult['folderNames'].map<Widget>((folderName) {
+                  return Text(folderName);
+                }).toList(),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text('Kapat'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,9 +201,21 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: _pickAndExtractZip,
-          child: const Text('Zip Dosyası Yükle ve Çıkar'),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              onPressed: _pickAndExtractZip,
+              child: const Text('Zip Dosyası Yükle ve Çıkar'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _isAnalyzing ? null : _analyzeAssetsZip,
+              child: _isAnalyzing 
+                ? CircularProgressIndicator() 
+                : const Text('Assets Zip Dosyasını Analiz Et'),
+            ),
+          ],
         ),
       ),
     );
