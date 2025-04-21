@@ -61,7 +61,7 @@ Yüklenen projeler sadece analiz amaçlıdır ve hiçbir yerde saklanmaz. İşle
 
 ### Flutter Uygulaması:
 ```bash
-git clone https://github.com/kullaniciAdi/mobil-test-ai.git
+git clone [https://github.com/kullaniciAdi/mobil-test-ai.git](https://github.com/Cihan9946/AI-powered-software-testing-mobil)
 cd mobil-test-ai
 flutter pub get
 flutter run
