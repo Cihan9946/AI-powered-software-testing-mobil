@@ -1,0 +1,38 @@
+{
+  "project_info": {
+    "project_number": "514875911347",
+    "project_id": "newmobile-c1fb3",
+    "storage_bucket": "newmobile-c1fb3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:514875911347:android:6c02a56a1dd57c76c314c6",
+        "android_client_info": {
+          "package_name": "com.example.mobile_new_temp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "514875911347-q182n5vc67nd6ackf90mf6o1kr8v4a6l.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.mobile_new_temp",
+            "certificate_hash": "2db2ad7426bc7fba89b19036a653afe9543481a4"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbqB02JmcgJTgf8_vjNoz4U9KqsQV5mic"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
