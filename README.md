@@ -1,3 +1,4 @@
+
 # 📱 AI Tabanlı Mobil Yazılım Testi Uygulaması
 
 Bu proje, Flutter ile geliştirilen bir mobil uygulamadır. Kullanıcılar, yazılım projelerini `.zip` dosyası olarak yükleyerek bu projelerin **güvenlik** ve **kalite** açısından değerlendirilmesini sağlar. Uygulama, arka planda çalışan bir **yapay zeka modeli** ile projeyi analiz eder ve sonuçları kullanıcıya yüzde olarak sunar.
